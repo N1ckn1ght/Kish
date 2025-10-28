@@ -12,3 +12,7 @@ pub fn set_bit(bitboard: &mut u64, bit: usize) {
 pub fn del_bit(bitboard: &mut u64, bit: usize) {
     *bitboard &= !(1 << bit);
 }
+
+pub fn print_bitboard(human_readable: bool) {
+    
+}
