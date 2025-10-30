@@ -1,6 +1,6 @@
 // seed: &mut u32
 
-use crate::util::{del_bit, get_bit, pop_bit, set_bit};
+use crate::util::{del_bit, get_bit, pop_bit, print_boards, set_bit};
 
 fn search_for_magic(sq: usize) {
     let mut combs: Vec<u64> = vec![0; 256];
@@ -9,10 +9,10 @@ fn search_for_magic(sq: usize) {
 
 // todo: also precompute attack bit handles? not magic, just bitx, bity -> changes
 
-fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
+pub fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
     let mut attacks = [0; 256];
     for i in 0..256 {
-        let mut bb = combinations[i];
+        let bb = combinations[i];
         let mut alt;
 
         // up
@@ -20,62 +20,74 @@ fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
         for j in (i+6..36).step_by(6) {
             alt = !alt;
             if alt {
-                if !get_bit(bb, j) {
+                if get_bit(bb, j) == 0 {
                     break;
                 }
             } else {
-                if get_bit(bb, j) {
+                if get_bit(bb, j) != 0 {
                     break;
                 }
-
+                set_bit(&mut attacks[i], j);
             }
         }
 
         // right
-        buf = 0;
+        alt = false;
         for j in i+1..((i / 6 + 1) * 6) {
-            if buf == 0 {
-                buf = j;
+            alt = !alt;
+            if alt {
+                if get_bit(bb, j) == 0 {
+                    break;
+                }
             } else {
-                set_bit(bb, j);
-                set_bit(bb, buf);
-                buf = 0;
+                if get_bit(bb, j) != 0 {
+                    break;
+                }
+                set_bit(&mut attacks[i], j);
             }
         }
 
         // down
         if i > 11 {
-            buf = 0;
+            alt = false;
             for j in (0..i-5).rev().step_by(6) {
-                if buf == 0 {
-                    buf = j;
+                alt = !alt;
+                if alt {
+                    if get_bit(bb, j) == 0 {
+                        break;
+                    }
                 } else {
-                    set_bit(bb, j);
-                    set_bit(bb, buf);
-                    buf = 0;
+                    if get_bit(bb, j) != 0 {
+                        break;
+                    }
+                    set_bit(&mut attacks[i], j);
                 }
             }
         }
 
         // left
-        buf = 0;
+        alt = false;
         for j in (i/6*6..i).rev() {
-            if buf == 0 {
-                buf = j;
+            alt = !alt;
+            if alt {
+                if get_bit(bb, j) == 0 {
+                    break;
+                }
             } else {
-                set_bit(bb, j);
-                set_bit(bb, buf);
-                buf = 0;
+                if get_bit(bb, j) != 0 {
+                    break;
+                }
+                set_bit(&mut attacks[i], j);
             }
         }
 
-        del_bit(bb, i);
+        print_boards(&[attacks[i], bb], None);
     }
 
     attacks
 }
 
-fn init_combinations(bb: u64) -> [u64; 256] {
+pub fn init_combinations(bb: u64) -> [u64; 256] {
     let mut combs = [0; 256];
     for (i, comb) in combs.iter_mut().enumerate() {
         let mut mask = bb;
@@ -92,7 +104,7 @@ fn init_combinations(bb: u64) -> [u64; 256] {
     combs
 }
 
-fn init_blocker_boards() -> [u64; 36] {
+pub fn init_blocker_boards() -> [u64; 36] {
     let mut bbs = [0; 36];
     for (i, bb) in bbs.iter_mut().enumerate() {
         let mut buf;

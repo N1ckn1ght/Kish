@@ -1,3 +1,6 @@
+use std::cmp::min;
+
+
 const WHITE: u64 = 0b101010010101101010010101101010010101;
 const BLACK: u64 = 0b010101101010010101101010010101101010;
 
@@ -35,10 +38,26 @@ pub fn pop_bit(bitboard: &mut u64) -> usize {
 
 // other aappliances
 
-pub fn print_bitboard(bitboard: u64) {
-    for rank in (0..6).rev() {
-        for file in 0..6 {
-            print!("{} ", (bitboard >> (rank * 6 + file)) & 1 );
+pub fn print_boards(bitboards: &[u64], columns: Option<usize>) {
+    let columns = columns.unwrap_or(4);
+    for i in (0..bitboards.len()).step_by(columns){
+        for r in (0..=30).rev().step_by(6) {
+            for j in 0..min(bitboards.len() - i, columns) {
+                for f in r..r+6 {
+                    let bit = get_bit(bitboards[i + j], f);
+                    if bit != 0 {
+                        if bit & WHITE != 0 {
+                            print!("X");
+                        } else {
+                            print!("O");
+                        }
+                    } else {
+                        print!(".");
+                    }
+                }
+                print!(" ");
+            }
+            println!();
         }
         println!();
     }
