@@ -17,7 +17,7 @@ pub fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
 
         // up
         alt = false;
-        for j in (i+6..36).step_by(6) {
+        for j in (sq+6..36).step_by(6) {
             alt = !alt;
             if alt {
                 if get_bit(bb, j) == 0 {
@@ -33,7 +33,7 @@ pub fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
 
         // right
         alt = false;
-        for j in i+1..((i / 6 + 1) * 6) {
+        for j in sq+1..((sq / 6 + 1) * 6) {
             alt = !alt;
             if alt {
                 if get_bit(bb, j) == 0 {
@@ -48,9 +48,9 @@ pub fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
         }
 
         // down
-        if i > 11 {
+        if sq > 11 {
             alt = false;
-            for j in (0..i-5).rev().step_by(6) {
+            for j in (0..sq-5).rev().step_by(6) {
                 alt = !alt;
                 if alt {
                     if get_bit(bb, j) == 0 {
@@ -67,7 +67,7 @@ pub fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
 
         // left
         alt = false;
-        for j in (i/6*6..i).rev() {
+        for j in (sq/6*6..sq).rev() {
             alt = !alt;
             if alt {
                 if get_bit(bb, j) == 0 {
@@ -80,8 +80,6 @@ pub fn init_attacks(sq: usize, combinations: &[u64; 256]) -> [u64; 256] {
                 set_bit(&mut attacks[i], j);
             }
         }
-
-        print_boards(&[attacks[i], bb], None);
     }
 
     attacks
