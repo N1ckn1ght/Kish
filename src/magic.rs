@@ -2,31 +2,12 @@
 
 use crate::util::{bb_to_str, del_bit, get_bit, pop_bit, print_boards, set_bit};
 
-pub fn search_for_magic(sq: usize, target: usize, combs: [u64; 256], attacks: [u64; 256], seed: &mut u64, limit: usize) -> u64 {
-    let mut magic = 0;
-    let mut fail = true;
-    for attempt in 0..limit {
-        magic = next_random_magic(seed);
-        fail = false;
-        let mut used = vec![0; 1 << target];
-        for i in 0..256 {
-            let index = (combs[i].wrapping_mul(magic) >> (64 - target)) as usize;
-            // println!("{} {}", bb_to_str(index.try_into().unwrap()), attacks[i]);
-            if used[index] != 0 && used[index] != attacks[i] {
-                fail = true;
-                break;
-            }
-            used[index] = attacks[i];
-        }
-        if !fail {
-            println!("#DEBUG\tFound magic: sq {}\ttry {}", sq, attempt);
-            break;
-        }
+pub fn init_magics(mut seed: u64, combs: &[[u64; 256]; 36], attacks: &[[u64; 256]; 36]) -> [u64; 36] {
+    let mut magics = [0; 36];
+    for i in 0..36 {
+        magics[i] = search_for_magic(i, 8, &combs[i], &attacks[i], &mut seed, 1048576);
     }
-    if fail {
-        panic!("Unable to find magic: sq {}\ttry {}\nlast seed {}\nlast magic {}", sq, limit, seed, magic);
-    }
-    magic
+    magics
 }
 
 // solutions to attacks
@@ -254,6 +235,33 @@ pub fn init_blocker_boards() -> [u64; 36] {
     }
 
     bbs
+}
+
+fn search_for_magic(sq: usize, target: usize, combs: &[u64; 256], attacks: &[u64; 256], seed: &mut u64, limit: usize) -> u64 {
+    let mut magic = 0;
+    let mut fail = true;
+    for attempt in 0..limit {
+        magic = next_random_magic(seed);
+        fail = false;
+        let mut used = vec![0; 1 << target];
+        for i in 0..256 {
+            let index = (combs[i].wrapping_mul(magic) >> (64 - target)) as usize;
+            // println!("{} {}", bb_to_str(index.try_into().unwrap()), attacks[i]);
+            if used[index] != 0 && used[index] != attacks[i] {
+                fail = true;
+                break;
+            }
+            used[index] = attacks[i];
+        }
+        if !fail {
+            println!("#DEBUG\tFound magic: sq {}\ttry {}", sq, attempt);
+            break;
+        }
+    }
+    if fail {
+        panic!("Unable to find magic: sq {}\ttry {}\nlast seed {}\nlast magic {}", sq, limit, seed, magic);
+    }
+    magic
 }
 
 fn next_random_magic(seed: &mut u64) -> u64 {
