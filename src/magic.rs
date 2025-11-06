@@ -1,5 +1,3 @@
-// seed: &mut u32
-
 use crate::util::{bb_to_str, del_bit, get_bit, pop_bit, print_boards, set_bit};
 
 pub fn init_magics(mut seed: u64, combs: &[[u64; 256]; 36], attacks: &[[u64; 256]; 36]) -> [u64; 36] {
