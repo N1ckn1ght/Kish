@@ -1,11 +1,5 @@
 use once_cell::sync::Lazy;
-use crate::magic::{init_attacks, init_blocker_boards, init_combinations, init_magics, init_solutions};
-
-pub static BLOCKER_BOARDS: Lazy<[u64; 36]> = Lazy::new(init_blocker_boards);
-pub static COMBINATIONS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_combinations(&BLOCKER_BOARDS));
-pub static ATTACKS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_attacks(&COMBINATIONS));
-pub static SOLUTIONS: Lazy<[[u64; 36]; 36]> = Lazy::new(init_solutions);
-pub static MAGICS: Lazy<[u64; 36]> = Lazy::new(|| init_magics(1, &COMBINATIONS, &ATTACKS));
+use crate::{magic::{BLOCKER_BOARDS, MAGICS, MAGIC_MAPS, SOLUTIONS}, util::{pop_bit, print_boards, BLACK, WHITE}};
 
 
 pub struct Board {
@@ -32,5 +26,75 @@ impl Board {
     // pub fn import_from_moves(moves: &str) -> Self {
     //     // e3 e2 c3e3
         
-    // }
+    pub fn iter_moves(&self) -> MoveIter {
+        let mask = if self.turn {
+            BLACK
+        } else {
+            WHITE
+        };
+        MoveIter {
+            bb: self.bb,
+            pieces: self.bb & mask,
+            attacks: 0,
+            curr_piece: 0
+        }
+    }
+
+    pub fn make_move(&mut self, mov: u64) {
+        self.bb ^= mov;
+        self.turn = !self.turn;
+    }
+
+    pub fn get_moves(&self) -> Vec<u64> {
+        let mut moves = Vec::with_capacity(24);
+        let mask = if self.turn {
+            BLACK
+        } else {
+            WHITE
+        };
+        let mut pieces = self.bb & mask;
+        while pieces != 0 {
+            let piece = pop_bit(&mut pieces);
+            let occupancies = self.bb & BLOCKER_BOARDS[piece];
+            let mut attacks = Self::get_attacks(piece, occupancies);
+            while attacks != 0 {
+                let attack = pop_bit(&mut attacks);
+                moves.push(SOLUTIONS[piece][attack]);
+            }
+        }
+        moves
+    }
+
+    #[inline]
+    pub fn get_attacks(sq: usize, occupancies: u64) -> u64 {
+        let magic_index = occupancies.wrapping_mul(MAGICS[sq]) >> 56;
+        MAGIC_MAPS[sq][magic_index as usize]
+    }
+}
+
+
+pub struct MoveIter {
+    bb: u64,
+    pieces: u64,
+    attacks: u64,
+    curr_piece: usize
+}
+
+impl<'a> Iterator for MoveIter {
+    type Item = u64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            if self.attacks != 0 {
+                let attack = pop_bit(&mut self.attacks);
+                return Some(SOLUTIONS[self.curr_piece][attack]);
+            }
+            if self.pieces == 0 {
+                return None;
+            }
+            self.curr_piece = pop_bit(&mut self.pieces);
+            let occupancies = self.bb & BLOCKER_BOARDS[self.curr_piece];
+            self.attacks = Board::get_attacks(self.curr_piece, occupancies);
+        }
+    }
 }

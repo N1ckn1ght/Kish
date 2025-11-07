@@ -1,4 +1,24 @@
+use once_cell::sync::Lazy;
 use crate::util::{bb_to_str, del_bit, get_bit, pop_bit, print_boards, set_bit};
+
+pub static BLOCKER_BOARDS: Lazy<[u64; 36]> = Lazy::new(init_blocker_boards);
+pub static COMBINATIONS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_combinations(&BLOCKER_BOARDS));
+pub static ATTACKS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_attacks(&COMBINATIONS));
+pub static SOLUTIONS: Lazy<[[u64; 36]; 36]> = Lazy::new(init_solutions);
+pub static MAGICS: Lazy<[u64; 36]> = Lazy::new(|| init_magics(1, &COMBINATIONS, &ATTACKS));
+pub static MAGIC_MAPS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_magic_maps(&COMBINATIONS, &ATTACKS, &MAGICS));
+
+
+pub fn init_magic_maps(combs: &[[u64; 256]; 36], attacks: &[[u64; 256]; 36], magics: &[u64; 36]) -> [[u64; 256]; 36] {
+    let mut magic_maps = [[0; 256]; 36];
+    for sq in 0..36 {
+        for i in 0..256 {
+            let index = (combs[sq][i].wrapping_mul(magics[sq]) >> 56) as usize;
+            magic_maps[sq][index] = attacks[sq][i];
+        }
+    }
+    magic_maps
+}
 
 pub fn init_magics(mut seed: u64, combs: &[[u64; 256]; 36], attacks: &[[u64; 256]; 36]) -> [u64; 36] {
     let mut magics = [0; 36];
