@@ -4,7 +4,7 @@ use crate::{magic::{BLOCKER_BOARDS, MAGICS, MAGIC_MAPS, SOLUTIONS}, util::{pop_b
 
 pub struct Board {
     pub bb:             u64,               // bitboard
-    pub turn:           bool,              // true for black
+    pub turn:           bool,              // true if black to move
 }
 
 impl Default for Board {
@@ -45,8 +45,8 @@ impl Board {
         self.turn = !self.turn;
     }
 
-    pub fn get_moves(&self) -> Vec<u64> {
-        let mut moves = Vec::with_capacity(24);
+    pub fn count_moves(&self) -> u8 {
+        let mut cnt = 0;
         let mask = if self.turn {
             BLACK
         } else {
@@ -56,13 +56,10 @@ impl Board {
         while pieces != 0 {
             let piece = pop_bit(&mut pieces);
             let occupancies = self.bb & BLOCKER_BOARDS[piece];
-            let mut attacks = Self::get_attacks(piece, occupancies);
-            while attacks != 0 {
-                let attack = pop_bit(&mut attacks);
-                moves.push(SOLUTIONS[piece][attack]);
-            }
+            let attacks = Self::get_attacks(piece, occupancies);
+            cnt += attacks.count_ones() as u8;
         }
-        moves
+        cnt
     }
 
     #[inline]
@@ -97,6 +94,8 @@ impl<'a> Iterator for MoveIter {
             self.attacks = Board::get_attacks(self.curr_piece, occupancies);
         }
     }
+
+    fn game_prep_next(&mut self) -> Option<Self::Item> {
+        
+    }
 }
-
-

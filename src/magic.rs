@@ -7,6 +7,7 @@ pub static ATTACKS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_attacks(&COMBINAT
 pub static SOLUTIONS: Lazy<[[u64; 36]; 36]> = Lazy::new(init_solutions);
 pub static MAGICS: Lazy<[u64; 36]> = Lazy::new(|| init_magics(1, &COMBINATIONS, &ATTACKS));
 pub static MAGIC_MAPS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_magic_maps(&COMBINATIONS, &ATTACKS, &MAGICS));
+// todo: add map for neighbours (for start of the game, move 2nd)
 
 
 pub fn init_magic_maps(combs: &[[u64; 256]; 36], attacks: &[[u64; 256]; 36], magics: &[u64; 36]) -> [[u64; 256]; 36] {
