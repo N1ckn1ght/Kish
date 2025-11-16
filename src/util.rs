@@ -1,10 +1,6 @@
 use std::cmp::min;
 
 
-pub const WHITE: u64 = 0b101010010101101010010101101010010101;
-pub const BLACK: u64 = 0b010101101010010101101010010101101010;
-
-
 // main operations
 
 #[inline]

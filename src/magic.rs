@@ -256,6 +256,14 @@ pub fn init_blocker_boards() -> [u64; 36] {
     bbs
 }
 
+pub fn init_neighbours() -> [u64; 36] {
+    let mut bbs: [u64; 36] = [0; 36];
+    for (i, bb) in bbs.iter_mut().enumerate() {
+        
+    }
+    bbs
+}
+
 fn search_for_magic(sq: usize, target: usize, combs: &[u64; 256], attacks: &[u64; 256], seed: &mut u64, limit: usize) -> u64 {
     let mut magic = 0;
     let mut fail = true;
