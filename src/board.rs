@@ -1,5 +1,4 @@
-use crate::{magic::{BLOCKER_BOARDS, MAGICS, MAGIC_MAPS, SOLUTIONS}, util::{pop_bit}};
-
+use crate::{magic::{BLOCKER_BOARDS, MAGICS, MAGIC_MAPS, SOLUTIONS}, util::pop_bit};
 
 pub const WHITE: u64 = 0b101010010101101010010101101010010101;
 pub const BLACK: u64 = 0b010101101010010101101010010101101010;
@@ -30,11 +29,12 @@ impl<'a> Iterator for MoveIter {
             self.attacks = get_attacks(self.curr_piece, occupancies);
         }
     }
-
-    fn pre_game_next(&mut self) -> Option<Self::Item> {
-        
-    }
 }
+
+// fn pre_game_next(&mut self) -> Option<Self::Item> {
+    
+//     None
+// }
 
 
 #[inline]
@@ -61,3 +61,4 @@ pub fn iter_moves(bb: u64) -> MoveIter {
         curr_piece: 0
     }
 }
+

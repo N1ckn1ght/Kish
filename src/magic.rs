@@ -7,7 +7,7 @@ pub static ATTACKS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_attacks(&COMBINAT
 pub static SOLUTIONS: Lazy<[[u64; 36]; 36]> = Lazy::new(init_solutions);
 pub static MAGICS: Lazy<[u64; 36]> = Lazy::new(|| init_magics(1, &COMBINATIONS, &ATTACKS));
 pub static MAGIC_MAPS: Lazy<[[u64; 256]; 36]> = Lazy::new(|| init_magic_maps(&COMBINATIONS, &ATTACKS, &MAGICS));
-// todo: add map for neighbours (for start of the game, move 2nd)
+pub static NEIGHBOURS: Lazy<[u64; 36]> = Lazy::new(init_neighbours);
 
 
 pub fn init_magic_maps(combs: &[[u64; 256]; 36], attacks: &[[u64; 256]; 36], magics: &[u64; 36]) -> [[u64; 256]; 36] {
@@ -259,8 +259,24 @@ pub fn init_blocker_boards() -> [u64; 36] {
 pub fn init_neighbours() -> [u64; 36] {
     let mut bbs: [u64; 36] = [0; 36];
     for (i, bb) in bbs.iter_mut().enumerate() {
-        
+        // up
+        if i < 30 {
+            set_bit(bb, i + 6);
+        }
+        // right
+        if i % 6 < 5 {
+            set_bit(bb, i + 1);
+        }
+        // down
+        if i > 5 {
+            set_bit(bb, i - 6);
+        }
+        // left
+        if i % 6 != 0 {
+            set_bit(bb, i - 1);
+        }
     }
+
     bbs
 }
 
@@ -317,7 +333,7 @@ pub fn print_attacks(square: usize, pattern: usize) {
     let i = square;
     let j = pattern;
     println!("{} {}", i, j);
-    print_boards(&[combinations[i][j], attacks[i][j]], None);
+    print_boards(&[combinations[i][j], attacks[i][j]]);
     let mut solves = vec![];
     let mut attack = attacks[i][j];
     while attack != 0 {
@@ -325,7 +341,7 @@ pub fn print_attacks(square: usize, pattern: usize) {
         solves.push(solutions[i][bit]);
     }
     if !solves.is_empty() {
-        print_boards(&solves, None);
+        print_boards(&solves);
     }
     println!("{}\n{}\n", bb_to_str(combinations[i][j]), bb_to_str(attacks[i][j]));
     for solve in solves.iter() {
@@ -481,5 +497,10 @@ mod tests {
         assert_eq!(solves[1], 0);
         assert_eq!(solves[2], 0);
         assert_eq!(solves[3], 0);
+    }
+
+    #[test]
+    fn test_magic_neighbours() {
+        
     }
 }
