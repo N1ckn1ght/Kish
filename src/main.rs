@@ -1,14 +1,12 @@
 mod util;
-mod magic;
+mod maps;
 mod board;
 
 fn main() {
     println!("Hello, world!");
-    let _ = &*magic::MAGIC_MAPS;
+    let _ = &*maps::MAGIC_MAPS;
     println!("Force init completed.");
 
     let mut bb: u64 = 0b111111111111110011111111111111111111;
     
 }
-
-

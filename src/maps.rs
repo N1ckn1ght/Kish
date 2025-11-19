@@ -357,10 +357,6 @@ mod tests {
 
     #[test]
     fn test_magic_init() {
-        let blockers = init_blocker_boards();
-        let combinations = init_combinations(&blockers);
-        let attacks = init_attacks(&combinations);
-
         // square (0 - 35) - pattern No. (0 - 255) pairs
         let inputs = [
             [7, 85],
@@ -373,7 +369,6 @@ mod tests {
             [22, 185],
             [22, 255]
         ];
-
         // expected results
         let combs: [u64; 9] = [
             0b000000000010000000000010010100000000,
@@ -399,21 +394,19 @@ mod tests {
         ];
 
         for (i, input) in inputs.iter().enumerate() {
-            assert_eq!(combinations[input[0]][input[1]], combs[i]);
-            assert_eq!(attacks[input[0]][input[1]], attack[i]);
+            assert_eq!(COMBINATIONS[input[0]][input[1]], combs[i]);
+            assert_eq!(ATTACKS[input[0]][input[1]], attack[i]);
         }
     }
 
     #[test]
     fn test_magic_solutions() {
-        let solutions = init_solutions();
-
         let mut solves = vec![];
         let sq = 7;
         let mut attack = 0b000010000000000010000000101000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 4);
         assert_eq!(solves[0], 0b000000000000000000000000001110000000);
@@ -426,7 +419,7 @@ mod tests {
         let mut attack = 0b000000000000100000000000100000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 2);
         assert_eq!(solves[0], 0b100000100000000000100000100000000000);
@@ -437,7 +430,7 @@ mod tests {
         let mut attack = 0b001010000000000000000000000000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 2);
         assert_eq!(solves[0], 0b110110000000000000000000000000000000);
@@ -448,7 +441,7 @@ mod tests {
         let mut attack = 0b000000000000000000100000000000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 1);
         assert_eq!(solves[0], 0b000000000000000000111000000000000000);
@@ -458,7 +451,7 @@ mod tests {
         let mut attack = 0b000000000000000000000010000000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 1);
         assert_eq!(solves[0], 0b000000000000000000001110000000000000);
@@ -468,7 +461,7 @@ mod tests {
         let mut attack = 0b010000000000000101000000010000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 4);
         assert_eq!(solves[0], 0b000000000000010000010000010000000000);
@@ -481,7 +474,7 @@ mod tests {
         let mut attack = 0b000000000000000000000000000000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 0);
 
@@ -490,7 +483,7 @@ mod tests {
         let mut attack = 0b010000000000000101000000010000000000;
         while attack != 0 {
             let bit = pop_bit(&mut attack);
-            solves.push(solutions[sq][bit]);
+            solves.push(SOLUTIONS[sq][bit]);
         }
         assert_eq!(solves.len(), 4);
         assert_eq!(solves[0], 0);
@@ -501,6 +494,11 @@ mod tests {
 
     #[test]
     fn test_magic_neighbours() {
-        
+        assert_eq!(NEIGHBOURS[0], 0b000000000000000000000000000001000010);
+        assert_eq!(NEIGHBOURS[5], 0b000000000000000000000000100000010000);
+        assert_eq!(NEIGHBOURS[30], 0b000010000001000000000000000000000000);
+        assert_eq!(NEIGHBOURS[35], 0b010000100000000000000000000000000000);
+        assert_eq!(NEIGHBOURS[24], 0b000001000010000001000000000000000000);
+        assert_eq!(NEIGHBOURS[15], 0b000000000000001000010100001000000000);
     }
 }
