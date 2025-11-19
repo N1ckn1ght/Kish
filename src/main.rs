@@ -1,6 +1,8 @@
 mod util;
 mod maps;
 mod board;
+mod engine;
+mod interface;
 
 fn main() {
     println!("Hello, world!");
